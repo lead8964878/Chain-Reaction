@@ -4,36 +4,36 @@ using System.Collections.Generic;
 
 public class SimpleCarController : MonoBehaviour
 {
-    public List<AxleInfo> axleInfos; // the information about each individual axle
-    public float maxMotorTorque; // maximum torque the motor can apply to wheel
-    public float maxSteeringAngle; // maximum steer angle the wheel can have
+    public float steerAngle;
+    public float enginePower;
+    public Vector3 centerOfMass;
+    public Rigidbody rb;
+    public WheelCollider[] wheels;
+    public Transform[] visualWheels;
 
-    public void FixedUpdate()
+    void Start()
     {
-        float motor = maxMotorTorque * Input.GetAxis("Vertical");
-        float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
-
-        foreach (AxleInfo axleInfo in axleInfos)
-        {
-            if (axleInfo.steering)
-            {
-                axleInfo.leftWheel.steerAngle = steering;
-                axleInfo.rightWheel.steerAngle = steering;
-            }
-            if (axleInfo.motor)
-            {
-                axleInfo.leftWheel.motorTorque = motor;
-                axleInfo.rightWheel.motorTorque = motor;
-            }
-        }
+        rb.centerOfMass = centerOfMass;
     }
-}
 
-[System.Serializable]
-public class AxleInfo
-{
-    public WheelCollider leftWheel;
-    public WheelCollider rightWheel;
-    public bool motor; // is this wheel attached to motor?
-    public bool steering; // does this wheel apply steer angle?
+    void Update()
+    {
+        for(int i = 0; i < wheels.Length; i++)
+        {
+            Vector3 pos;
+            Quaternion rot;
+            wheels[i].GetWorldPose(out pos, out rot);
+            visualWheels[i].position = pos;
+            visualWheels[i].rotation = rot;
+        }
+
+        float v = Input.GetAxis("Vertical");
+        float h = Input.GetAxis("Horizontal");
+
+        wheels[0].steerAngle = h * steerAngle;
+        wheels[1].steerAngle = h * steerAngle;
+
+        wheels[2].motorTorque = v * enginePower;
+        wheels[3].motorTorque = v * enginePower;
+    }
 }
