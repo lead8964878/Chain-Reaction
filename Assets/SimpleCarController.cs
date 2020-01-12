@@ -11,6 +11,8 @@ public class SimpleCarController : MonoBehaviour
     public WheelCollider[] wheels;
     public Transform[] visualWheels;
 
+    private bool cameraFree = false;
+
     void Start()
     {
         rb.centerOfMass = centerOfMass;
@@ -18,22 +20,29 @@ public class SimpleCarController : MonoBehaviour
 
     void Update()
     {
-        for(int i = 0; i < wheels.Length; i++)
+        if (Input.GetKey(KeyCode.F1))
         {
-            Vector3 pos;
-            Quaternion rot;
-            wheels[i].GetWorldPose(out pos, out rot);
-            visualWheels[i].position = pos;
-            visualWheels[i].rotation = rot;
+            cameraFree = !cameraFree;
         }
+        if (!cameraFree)
+        {
+            for (int i = 0; i < wheels.Length; i++)
+            {
+                Vector3 pos;
+                Quaternion rot;
+                wheels[i].GetWorldPose(out pos, out rot);
+                visualWheels[i].position = pos;
+                visualWheels[i].rotation = rot;
+            }
 
-        float v = Input.GetAxis("Vertical");
-        float h = Input.GetAxis("Horizontal");
+            float v = Input.GetAxis("Vertical");
+            float h = Input.GetAxis("Horizontal");
 
-        wheels[0].steerAngle = h * steerAngle;
-        wheels[1].steerAngle = h * steerAngle;
+            wheels[0].steerAngle = h * steerAngle;
+            wheels[1].steerAngle = h * steerAngle;
 
-        wheels[2].motorTorque = v * enginePower;
-        wheels[3].motorTorque = v * enginePower;
+            wheels[2].motorTorque = v * enginePower;
+            wheels[3].motorTorque = v * enginePower;
+        }
     }
 }
